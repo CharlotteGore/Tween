@@ -8,9 +8,9 @@
     "charlottegore/easing": "*",
     "manuelstofer/is": "*",
     "manuelstofer/each": "*",
-    "component/color-parser": "*",
     "charlottegore/parse-duration": "*",
-    "charlottegore/render-loop": "*"
+    "charlottegore/render-loop": "*",
+    "charlottegore/color-parser": "*"
   },
   "development": {},
   "license": "MIT",
