@@ -125,7 +125,7 @@ describe("Tween module", function(){
 
 			var tween = Tween();
 
-			expect(tween.with).toBeDefined();
+			expect(tween.using).toBeDefined();
 
 		});
 
@@ -141,7 +141,7 @@ describe("Tween module", function(){
 
 			var tween = Tween({ left : 10, top : 20})
 							.to({ left : 100, top : 200})
-							.with("ease-out");
+							.using("ease-out");
 
 			// this is sort of testing the easer function, inadvertently.
 			// Really we're just testing it's using the *right* easing function.
@@ -168,7 +168,7 @@ describe("Tween module", function(){
 
 			var tween = Tween({ left : 10, top : 20})
 							.to({ left : 100, top : 200})
-							.with([0.015,0.83,0.375,0.995]);
+							.using([0.015,0.83,0.375,0.995]);
 
 			var result = tween.valueAtTime(0);
 
@@ -193,7 +193,7 @@ describe("Tween module", function(){
 			// { c1 : [0,0], c2 : [0.015,0.83], c3 : [0.375,0.995], c4 : [1,1]}
 			var tween = Tween({ left : 10, top : 20})
 							.to({ left : 100, top : 200})
-							.with({ c1 : [0,0], c2 : [0.015,0.83], c3 : [0.375,0.995], c4 : [1,1]});
+							.using({ c1 : [0,0], c2 : [0.015,0.83], c3 : [0.375,0.995], c4 : [1,1]});
 
 			var result = tween.valueAtTime(0);
 
@@ -217,7 +217,7 @@ describe("Tween module", function(){
 
 			var tween = Tween({ left : 10, top : 20})
 							.to({ left : 100, top : 200})
-							.with("ease-out");
+							.using("ease-out");
 
 			// this is sort of testing the easer function, inadvertently.
 			// Really we're just testing it's using the *right* easing function.
@@ -251,7 +251,7 @@ describe("Tween module", function(){
 
 		it("Can set a 'begin' callback with onBegin()", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
 			var begin = jasmine.createSpy();
 
 			tween.onBegin(begin);
@@ -265,7 +265,7 @@ describe("Tween module", function(){
 
 		it("Can set a 'tick' callback with onTick()", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
 			var tick = jasmine.createSpy();
 
 			tween.onTick(tick);
@@ -279,7 +279,7 @@ describe("Tween module", function(){
 
 		it("Can set a 'finish' callback with onFinish()", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
 			var finish = jasmine.createSpy();
 
 			tween.onFinish(finish);
@@ -293,7 +293,7 @@ describe("Tween module", function(){
 
 		it("Can set a 'finish' callback with on('finish')", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
 			var finish = jasmine.createSpy();
 
 			tween.on("finish", finish);
@@ -314,7 +314,7 @@ describe("Tween module", function(){
 
 		it("has a duration method", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
 
 			expect(tween.duration).toBeDefined();
 
@@ -323,7 +323,7 @@ describe("Tween module", function(){
 
 		it("can accept a number (milliseconds)", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out').duration(1000);
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration(1000);
 
 			expect(tween._duration).toBe(1000);
 
@@ -331,7 +331,7 @@ describe("Tween module", function(){
 
 		it("can accept strings with seconds", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out').duration('1s');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('1s');
 
 			expect(tween._duration).toBe(1000);
 
@@ -339,7 +339,7 @@ describe("Tween module", function(){
 
 		it("can accept strings with milliseconds", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out').duration('100ms');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('100ms');
 
 			expect(tween._duration).toBe(100);
 
@@ -347,7 +347,7 @@ describe("Tween module", function(){
 
 		it("can accept strings with minutes", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).with('ease-out').duration('1m');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('1m');
 
 			expect(tween._duration).toBe( 1000 * 60 );
 

@@ -104,7 +104,7 @@ Tween.prototype = {
 
 	},
 
-	with : function( config ){
+	using : function( config ){
 
 		var self = this;
 
@@ -115,8 +115,8 @@ Tween.prototype = {
 				each( self.tweens, function( tween, key ){
 
 					// forward and back
-					tween.forward = easing.Ease(tween.start).to(tween.end).with( config );
-					tween.back = easing.Ease(tween.end).to(tween.start).with( config );
+					tween.forward = easing.Ease(tween.start).to(tween.end).using( config );
+					tween.back = easing.Ease(tween.end).to(tween.start).using( config );
 
 				});
 
@@ -140,11 +140,11 @@ Tween.prototype = {
 
 				// forward
 				var temp = easing.Ease(tween.start).to(tween.end)
-				tween.forward = temp.withCSS3Curve.apply(temp, config);
+				tween.forward = temp.usingCSS3Curve.apply(temp, config);
 
 				// back
 				temp = easing.Ease(tween.end).to(tween.start);
-				tween.back = temp.withCSS3Curve.apply(temp, config);
+				tween.back = temp.usingCSS3Curve.apply(temp, config);
 
 			});
 
@@ -152,8 +152,8 @@ Tween.prototype = {
 
 			each( self.tweens, function( tween, key ){
 
-				tween.forward = easing.Ease(tween.start).to(tween.end).withCustomCurve(config);
-				tween.back = easing.Ease(tween.end).to(tween.start).withCustomCurve(config);
+				tween.forward = easing.Ease(tween.start).to(tween.end).usingCustomCurve(config);
+				tween.back = easing.Ease(tween.end).to(tween.start).usingCustomCurve(config);
 
 			});
 

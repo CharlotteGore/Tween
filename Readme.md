@@ -63,7 +63,7 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 
   Every tween needs a start and an end. Set the end values here. 
 
-### .with( `easing` )
+### .using( `easing` )
 
   All the functionality in the Easing module is exposed here, but luckily the API is a lot simpler.
 
