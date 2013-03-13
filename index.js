@@ -1,4 +1,5 @@
-var easing = require('easing'),
+var easing = require('easing').Ease,
+	Bezier = require('bezier'),
 	is = require('is'),
 	each = require('each'),
 	colorParse = require('color-parser'),
@@ -42,16 +43,39 @@ var processStates = function( states ){
 
 }
 
+var buildPaths = function(){
+
+	if(this._pathMode==='linear'){
+
+		each(this.tweens, function(tween){
+
+			tween.forward = Bezier().c1([tween.start,0]).c2([tween.end, 0]).isLinear();
+			tween.back = Bezier().c1([tween.end, 0]).c2([tween.start, 0]).isLinear();
+
+		});
+
+	}
+
+	return true;
+
+}
+
 var Tween = function( startStates ){
 
 	this.tweens = {};
+
 	this._duration = 1000;
-	this.from( startStates );
+
+	this._easer = easing().using('linear');
+	this._pathMode = 'linear';
+
 	this.callbacks = {
 		"tick" : function(){},
 		"begin" : function(){},
 		"finish" : function(){}
 	};
+
+	this.from( startStates );
 
 	return this;
 	
@@ -73,9 +97,13 @@ Tween.prototype = {
 
 		});
 
+		buildPaths.call(this);
+
 		return this;
 
 	},
+
+
 
 	to : function( endStates ){
 
@@ -100,6 +128,8 @@ Tween.prototype = {
 
 		});
 
+		buildPaths.call(this);
+
 		return this;
 
 	},
@@ -110,15 +140,12 @@ Tween.prototype = {
 
 		if( is.string( config ) ){
 
-			if( easing.isPreset( config ) ){
-
-				each( self.tweens, function( tween, key ){
+			if( require('easing').isPreset( config ) ){
 
 					// forward and back
-					tween.forward = easing.Ease(tween.start).to(tween.end).using( config );
-					tween.back = easing.Ease(tween.end).to(tween.start).using( config );
+					self._easer = easing().using( config );
 
-				});
+				
 
 			} else {
 
@@ -136,26 +163,12 @@ Tween.prototype = {
 
 		}else if( is.array( config ) && config.length === 4 ){
 
-			each( self.tweens, function( tween, key ){
-
-				// forward
-				var temp = easing.Ease(tween.start).to(tween.end)
-				tween.forward = temp.usingCSS3Curve.apply(temp, config);
-
-				// back
-				temp = easing.Ease(tween.end).to(tween.start);
-				tween.back = temp.usingCSS3Curve.apply(temp, config);
-
-			});
+				var temp = easing();
+				self._easer = temp.usingCSS3Curve.apply(temp, config);
 
 		}else if( is.object( config ) && is.array( config.c1 ) && is.array( config.c2 ) && is.array( config.c3) && is.array( config.c4 ) ){
 
-			each( self.tweens, function( tween, key ){
-
-				tween.forward = easing.Ease(tween.start).to(tween.end).usingCustomCurve(config);
-				tween.back = easing.Ease(tween.end).to(tween.start).usingCustomCurve(config);
-
-			});
+			self._easer = easing().usingCustomCurve(config);
 
 		}
 
@@ -238,6 +251,7 @@ Tween.prototype = {
 	valueAtTime : function( time, reverse ){
 
 		var result = {};
+		var val = this._easer( time );
 
 		if(this.tweens){
 
@@ -245,11 +259,11 @@ Tween.prototype = {
 
 				if(!reverse){
 
-				result[id] = tween.forward.valueAtTime( time );
+					result[id] = tween.forward.xAtTime( val );
 
 				}else{
 
-				result[id] = tween.back.valueAtTime( time );
+					result[id] = tween.back.xAtTime( val );
 
 				}
 

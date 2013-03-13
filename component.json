@@ -10,7 +10,8 @@
     "manuelstofer/each": "*",
     "charlottegore/parse-duration": "*",
     "charlottegore/render-loop": "*",
-    "charlottegore/color-parser": "*"
+    "charlottegore/color-parser": "*",
+    "charlottegore/bezier" : "*"
   },
   "development": {},
   "license": "MIT",

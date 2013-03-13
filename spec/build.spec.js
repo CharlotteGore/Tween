@@ -235,8 +235,8 @@ describe("Tween module", function(){
 
 			result = tween.valueAtTime(0.5, true);
 
-			expect(result.left).toBe(27.15625);
-			expect(result.top).toBe(54.3125);	
+			expect(result.left).toBe(27.156250000000004);
+			expect(result.top).toBe(54.31250000000001);	
 
 
 		});
