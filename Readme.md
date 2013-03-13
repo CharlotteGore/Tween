@@ -59,6 +59,10 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 
 ### .to( `keyvaluepairs` || `colour string` )
 
+    tween.to({ left: 100, top: 50 })
+
+  Every tween needs a start and an end. Set the end values here. 
+
 ### .with( `easing` )
 
   All the functionality in the Easing module is exposed here, but luckily the API is a lot simpler.
