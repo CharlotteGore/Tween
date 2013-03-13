@@ -116,7 +116,7 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 
   Simple callback that fires when the animation starts playing. Tween doesn't use the deferred start functionality in Render-Loop yet but this is coming.
 
-### .onEnd( `callback` )
+### .onFinish( `callback` )
 
   Simple callback that fires when the animation is done. 
 
