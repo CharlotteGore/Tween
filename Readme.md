@@ -4,9 +4,9 @@ CommonJS Animation Utility.
 
 Every few years I seem to have another crack at writing some kind of animation utility. With new sub-millisecond timings available to decent browsers and CommonJS taking off, it made sense to do something better suited to the modern world. I was never happy with the jQuery style object configuration of tweens.
 
-Tween takes advantage of ["Render-Loop"](http://github.com/CharlotteGore/render-loop), which is a central, single animation loop that offers sub-millisecond timings and task scheduling for all animations to hook into and use.
+Tween takes advantage of ["Tick"](http://github.com/CharlotteGore/tick), which is a central, single animation loop that offers sub-millisecond timings and normalised outputs.
 
-It also uses ["Easing"](http://github.com/CharlotteGore/easing). I took the old Bezier Curve based easing and turned it into a standalone module that could take user configurable normalised cubic bezier curves that match the way easing can be customised for CSS3.
+It also uses ["Easing"](http://github.com/CharlotteGore/easing). I took the old Bezier Curve based easing and turned it into a standalone module that could take user configurable normalised cubic bezier curves and, when used in CSS3 Curve mode identically replicates `transition-timing-function: cubic-bezier()` based easing.
 
 Inspired by ["Component/Tween"](http://github.com/component/tween) I shamelessly borrowed their concept of tweening objects rather than single values. So, you can do:
 
@@ -25,12 +25,13 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 ## Features
 
 - Low level, framework / DOM neutral.
+- Can replicates CSS3 easing exactly for non-CSS3 browsers / Canvas / Non-animation based work
 - Async onBegin, onEnd and onTick() callbacks to apply returned values to useful work.
-- Ultra slinky cubic bezier curve based easing. Many presets and compatible with CSS3 cubic bezier curves.
+- Slinky easing and smooth animation.
 - Frame skipping / Progressive enhancement. Animations last the duration specified, and get smoother as the browser allows
 - Full cross-browser support.
 - Sub millisecond timings for better, smoother animations on decent browsers
-- Crappy setTimeout fallback for browsers that should know better
+- setTimeout fallback for browsers that should know better
 - Fluent interface
 
 ## Installation
@@ -72,7 +73,7 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
     // with preset... 
     var myTween = tween({ left : 10}).to({ left : 100 }).with('ease-in');
 
-    // or with CSS3 cubic bezier curve data.. 
+    // or with CSS3 cubic bezier curve data AND `Y When Xn === t` easing
     var myTween = tween({left : 10}).to({ left : 100}).with([0.015,0.83,0.375,0.995]) 
 
     // or with a full cubic bezier curve..
@@ -96,27 +97,27 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
     // or just direct milliseconds
     myTween.duration(3500)
 
-### .onTick( `callback` )
+### .tick( `callback` )
 
   Define the callback which will do the actual work required on the tick event. 
 
-    myTween.onTick(function( values ){ 
+    myTween.tick(function( values ){ 
 
       element.css(values);
 
     });
 
-    myOtherTween.onTick(function(values){
+    myOtherTween.tick(function(values){
 
       element.style.left = values.left + "px";
 
     });
 
-### .onBegin( `callback` )
+### .begin( `callback` )
 
-  Simple callback that fires when the animation starts playing. Tween doesn't use the deferred start functionality in Render-Loop yet but this is coming.
+  Simple callback that fires when the animation starts playing.
 
-### .onFinish( `callback` )
+### .finish( `callback` )
 
   Simple callback that fires when the animation is done. 
 
@@ -127,10 +128,6 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 ### .stop()
 
   Changed your mind? Stop the animation.
-
-### .rewind()
-
-  Play the animation in reverse. Like CSS3 transitions, the easing continues to 'ease out' etc, so not strictly speaking a rewind.
 
 ## License
 

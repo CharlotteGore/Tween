@@ -27,7 +27,7 @@ describe("Tween module", function(){
 				top : 20
 			};
 
-			var tween = Tween(obj).query();
+			var tween = Tween(obj).query().tweens;
 
 			expect(tween.left.start).toBe(10);
 			expect(tween.top.start).toBe(20);	
@@ -39,7 +39,7 @@ describe("Tween module", function(){
 
 			var string = "#FFDE00";
 
-			var tween = Tween(string).query();
+			var tween = Tween(string).query().tweens;
 
 			expect(tween.r.start).toBe(255);
 			expect(tween.g.start).toBe(222);
@@ -52,7 +52,7 @@ describe("Tween module", function(){
 
 			var number = 234;
 
-			var tween = Tween(number).query();
+			var tween = Tween(number).query().tweens;
 
 			expect(tween.tween.start).toBe(234);
 
@@ -60,7 +60,7 @@ describe("Tween module", function(){
 
 		it("Can be initialised without parameters", function(){
 
-			var tween = Tween().query();
+			var tween = Tween().query().tweens;
 
 			expect(tween.tween.start).toBe(0);
 
@@ -68,14 +68,14 @@ describe("Tween module", function(){
 
 		it("has a working .from() method", function(){
 
-			var tween = Tween().from({ left : 10, top : 20}).query();
+			var tween = Tween().from({ left : 10, top : 20}).query().tweens;
 			expect(tween.left.start).toBe(10);
 
-			var tween = Tween().from("#FFDE00").query();
+			var tween = Tween().from("#FFDE00").query().tweens;
 			expect(tween.r.start).toBe(255);
 			expect(tween.g.start).toBe(222);
 
-			var tween = Tween().from(234).query();
+			var tween = Tween().from(234).query().tweens;
 			expect(tween.tween.start).toBe(234);
 		});
 
@@ -88,7 +88,7 @@ describe("Tween module", function(){
 
 		it("can take an object for to()", function(){
 
-			var tween = Tween({ left : 10, top : 20}).to({ left : 100, top : 200}).query();
+			var tween = Tween({ left : 10, top : 20}).to({ left : 100, top : 200}).query().tweens;
 
 			expect(tween.left.end).toBe(100);
 			expect(tween.top.end).toBe(200);
@@ -97,7 +97,7 @@ describe("Tween module", function(){
 
 		it("can take a CSS hex string for to()", function(){
 
-			var tween = Tween("#FFDE00").to("#DEFF99").query();
+			var tween = Tween("#FFDE00").to("#DEFF99").query().tweens;
 
 			expect(tween.r.end).toBe(222);
 			expect(tween.g.end).toBe(255);
@@ -107,7 +107,7 @@ describe("Tween module", function(){
 
 		it("can take a raw number for to()", function(){
 
-			var tween = Tween(235).to(1543).query();
+			var tween = Tween(235).to(1543).query().tweens;
 
 			expect(tween.tween.end).toBe(1543);
 
@@ -183,8 +183,8 @@ describe("Tween module", function(){
 
 			result = tween.valueAtTime(0.5);
 
-			expect(result.left).toBe(82.84375);
-			expect(result.top).toBe(165.6875);	
+			expect(result.left).toBe(94.14583556883085);
+			expect(result.top).toBe(188.2916711376617);	
 
 		});	
 
@@ -213,33 +213,6 @@ describe("Tween module", function(){
 
 		});
 
-		it("Returns correct easing values when reversed", function(){
-
-			var tween = Tween({ left : 10, top : 20})
-							.to({ left : 100, top : 200})
-							.using("ease-out");
-
-			// this is sort of testing the easer function, inadvertently.
-			// Really we're just testing it's using the *right* easing function.
-
-			var result = tween.valueAtTime(0, true);
-
-			expect(result.left).toBe(100);
-			expect(result.top).toBe(200);
-
-
-			result = tween.valueAtTime(1, true);
-
-			expect(result.left).toBe(10);
-			expect(result.top).toBe(20);	
-
-			result = tween.valueAtTime(0.5, true);
-
-			expect(result.left).toBe(27.156250000000004);
-			expect(result.top).toBe(54.31250000000001);	
-
-
-		});
 
 	});
 
@@ -247,64 +220,73 @@ describe("Tween module", function(){
 
 		var Tween = require('tween').Tweening;
 
-		var flag, value;
+		var begin, tick, tween, flag;
 
-		it("Can set a 'begin' callback with onBegin()", function(){
+		it("Can play() animation calling the set tick handler", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
-			var begin = jasmine.createSpy();
+			runs(function(){
 
-			tween.onBegin(begin);
+				tween = Tween({left : 10}).to({left : 100}).duration('100').using('linear');
+				tick = jasmine.createSpy();
+				flag = false;
 
-			tween.trigger('begin');
+				tween.tick(tick);
+				tween.finish(function(){
 
-			expect(begin).toHaveBeenCalled();
+					flag = true;
 
+				})
+				tween.play()
 
-		});
+			});
 
-		it("Can set a 'tick' callback with onTick()", function(){
+			waitsFor(function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
-			var tick = jasmine.createSpy();
+				return flag
 
-			tween.onTick(tick);
+			}, 1000)
 
-			tween.trigger('tick', 0.5);
+			runs(function(){
 
-			expect(tick).toHaveBeenCalledWith(0.5);
+				expect(tick).toHaveBeenCalled();
 
-
-		});
-
-		it("Can set a 'finish' callback with onFinish()", function(){
-
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
-			var finish = jasmine.createSpy();
-
-			tween.onFinish(finish);
-
-			tween.trigger('finish');
-
-			expect(finish).toHaveBeenCalled();
-
+			})
 
 		});
 
-		it("Can set a 'finish' callback with on('finish')", function(){
+		it("Can set a 'begin' and 'finish' callback which fire properly", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out');
-			var finish = jasmine.createSpy();
+			runs(function(){
 
-			tween.on("finish", finish);
+				tween = Tween({left : 10}).to({left : 100}).duration('100').using('linear');
 
-			tween.trigger('finish');
+				begin = jasmine.createSpy();
+				flag = false;
 
-			expect(finish).toHaveBeenCalled();
+				tween.begin(begin);
+				tween.finish(function(){
 
+					flag = true;
+
+				})
+
+				tween.play()
+
+			});
+
+			waitsFor(function(){
+
+				return flag
+
+			}, 1000)
+
+			runs(function(){
+
+				expect(begin).toHaveBeenCalled();
+
+			})
 
 		});
-
 
 	});
 
@@ -323,33 +305,33 @@ describe("Tween module", function(){
 
 		it("can accept a number (milliseconds)", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration(1000);
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration(1000).query();
 
-			expect(tween._duration).toBe(1000);
+			expect(tween.duration).toBe(1000);
 
 		});
 
 		it("can accept strings with seconds", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('1s');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('1s').query();
 
-			expect(tween._duration).toBe(1000);
+			expect(tween.duration).toBe(1000);
 
 		});
 
 		it("can accept strings with milliseconds", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('100ms');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('100ms').query();
 
-			expect(tween._duration).toBe(100);
+			expect(tween.duration).toBe(100);
 
 		});	
 
 		it("can accept strings with minutes", function(){
 
-			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('1m');
+			var tween = Tween({left : 10}).to({left : 100}).using('ease-out').duration('1m').query();
 
-			expect(tween._duration).toBe( 1000 * 60 );
+			expect(tween.duration).toBe( 1000 * 60 );
 
 		});	
 

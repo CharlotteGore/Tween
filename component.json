@@ -2,14 +2,14 @@
   "name": "tween",
   "repo": "charlottegore/tween",
   "description": "Tween generator using cubic-bezier easing",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "keywords": [],
   "dependencies": {
     "charlottegore/easing": "*",
     "manuelstofer/is": "*",
     "manuelstofer/each": "*",
     "charlottegore/parse-duration": "*",
-    "charlottegore/render-loop": "*",
+    "charlottegore/tick": "*",
     "charlottegore/color-parser": "*",
     "charlottegore/bezier" : "*"
   },

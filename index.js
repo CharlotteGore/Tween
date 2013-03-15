@@ -4,7 +4,7 @@ var easing = require('easing').Ease,
 	each = require('each'),
 	colorParse = require('color-parser'),
 	parseDuration = require('parse-duration'),
-	renderLoop = require('render-loop');
+	tick = require('tick');
 
 
 var processStates = function( states ){
@@ -49,11 +49,9 @@ var buildPaths = function(){
 
 		each(this.tweens, function(tween){
 
-			tween.forward = Bezier().c1([tween.start,0]).c2([tween.end, 0]).isLinear();
-			tween.back = Bezier().c1([tween.end, 0]).c2([tween.start, 0]).isLinear();
+			tween.path = Bezier().c1([0,tween.start]).c2([0, tween.end]).isLinear();
 
 		});
-
 	}
 
 	return true;
@@ -103,8 +101,6 @@ Tween.prototype = {
 
 	},
 
-
-
 	to : function( endStates ){
 
 		var self = this,
@@ -141,34 +137,27 @@ Tween.prototype = {
 		if( is.string( config ) ){
 
 			if( require('easing').isPreset( config ) ){
-
 					// forward and back
 					self._easer = easing().using( config );
 
-				
-
 			} else {
 
-				var err = "Sorry, invalid easing. The options are: "
-
-				each(easing.presets, function( value ){
-
-					err += value + " ";
-
-				});
-
-				throw new Error( err );
+				throw new Error("Invalid easing");
 
 			}
 
 		}else if( is.array( config ) && config.length === 4 ){
 
-				var temp = easing();
-				self._easer = temp.usingCSS3Curve.apply(temp, config);
+			var temp = easing();
+			self._easer = temp.usingCSS3Curve.apply(temp, config);
 
 		}else if( is.object( config ) && is.array( config.c1 ) && is.array( config.c2 ) && is.array( config.c3) && is.array( config.c4 ) ){
 
 			self._easer = easing().usingCustomCurve(config);
+
+		}else {
+
+			throw new Error("Invalid easing");
 
 		}
 
@@ -189,64 +178,36 @@ Tween.prototype = {
 	},
 
 	// callback helpers
-	onTick : function( callback ){
+	tick : function( callback ){
 
-		this.on("tick", callback);
-
+		this.callbacks.tick = callback;
 		return this;
 
 	},
 
-	onBegin : function( callback ){
+	begin : function( callback ){
 
-		this.on("begin", callback);
-
+		this.callbacks.begin = callback;
 		return this;
 
 	},
 
-	onFinish : function( callback ){
+	finish : function( callback ){
 
-		this.on("finish", callback);
-
-		return this;
-
-	},
-
-	on : function( event, callback ){
-
-		if(this.callbacks[event]){
-
-			this.callbacks[event] = callback;
-
-		}else{
-
-			throw new Error("Unsupported callback. Options are tick, begin and finish.");
-
-		}
-
-		return this;
-
-	},
-
-	trigger : function( event, time ){
-
-		if(this.callbacks[event]){
-
-			this.callbacks[event]( time );
-
-		}
-
+		this.callbacks.finish = callback;
 		return this;
 
 	},
 
 	query : function(){
 
-		return this.tweens;
+		return {
+			easer : this._easer,
+			duration : this._duration,
+			tweens : this.tweens
+		}
 
 	},
-
 	// debug method
 	valueAtTime : function( time, reverse ){
 
@@ -256,17 +217,7 @@ Tween.prototype = {
 		if(this.tweens){
 
 			each(this.tweens, function(tween, id){
-
-				if(!reverse){
-
-					result[id] = tween.forward.xAtTime( val );
-
-				}else{
-
-					result[id] = tween.back.xAtTime( val );
-
-				}
-
+				result[id] = tween.path.yAtTime( val );
 			})
 
 		}
@@ -275,22 +226,26 @@ Tween.prototype = {
 
 	},
 
-	play : function( reverse ){
+	play : function(){
 
 		var self = this;
 
-		var task = renderLoop
-			.Task( function( percent ){
+		self.handle = tick.add( function( elapsed, stop ){
 
-				reverse ? self.callbacks.tick( self.valueAtTime( percent, true ) ) : self.callbacks.tick( self.valueAtTime( percent ) )
+			var percent = Math.min(1, elapsed / self._duration);
 
-			})
-			.usePercentElapsedRunner()
-			.runsFor( self._duration )
-			.onStart( self.callbacks.begin )
-			.onEnd( self.callbacks.finish )
+			self.callbacks.tick( self.valueAtTime( percent ) ); 
 
-		self.handle = renderLoop.runNow( task );
+			if(percent === 1){
+
+				stop();
+				self.callbacks.finish( tick.now() );
+
+			}
+
+		});
+
+		self.callbacks.begin( tick.now() );
 
 		return this;
 
@@ -300,17 +255,9 @@ Tween.prototype = {
 
 		if(self.handle){
 
-			renderLoop.stop(self.handle);
+			self.handle.stop();
 
 		}
-
-		return this;
-
-	},
-
-	rewind : function(){
-
-		this.play( true );
 
 		return this;
 
