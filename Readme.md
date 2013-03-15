@@ -2,7 +2,7 @@
 
 CommonJS Animation Utility.
 
-Every few years I seem to have another crack at writing some kind of animation utility. With new sub-millisecond timings available to decent browsers and CommonJS taking off, it made sense to do something better suited to the modern world. I was never happy with the jQuery style object configuration of tweens.
+Every few years I seem to have another crack at writing some kind of animation utility. With new sub-millisecond timings available to decent browsers and CommonJS taking off, it made sense to do something better suited to the modern world.
 
 Tween takes advantage of ["Tick"](http://github.com/CharlotteGore/tick), which is a central, single animation loop that offers sub-millisecond timings and normalised outputs.
 
@@ -24,14 +24,14 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 
 ## Features
 
-- Low level, framework / DOM neutral.
-- Can replicates CSS3 easing exactly for non-CSS3 browsers / Canvas / Non-animation based work
-- Async onBegin, onEnd and onTick() callbacks to apply returned values to useful work.
+- Less glitchy and more precise and reliable than CSS3 transitions on Desktop.
+- Low level, DOM neutral
+- Only 12k built and minified
+- Replicates CSS3 cubic-bezier easing exactly in software.
+- Async begin, finish and tick callbacks.
 - Slinky easing and smooth animation.
 - Frame skipping / Progressive enhancement. Animations last the duration specified, and get smoother as the browser allows
-- Full cross-browser support.
-- Sub millisecond timings for better, smoother animations on decent browsers
-- setTimeout fallback for browsers that should know better
+- Cross browser support.
 - Fluent interface
 
 ## Installation
