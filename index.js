@@ -230,11 +230,15 @@ Tween.prototype = {
 
 		var self = this;
 
-		self.handle = tick.add( function( elapsed, stop ){
+		self.stopped = false;
 
+		self.handle = tick.add( function( elapsed, stop ){
+	
 			var percent = Math.min(1, elapsed / self._duration);
 
-			self.callbacks.tick( self.valueAtTime( percent ) ); 
+			if(!self.stopped){
+				self.callbacks.tick( self.valueAtTime( percent ) ); 
+			}
 
 			if(percent === 1){
 
@@ -242,6 +246,8 @@ Tween.prototype = {
 				self.callbacks.finish( tick.now() );
 
 			}
+
+
 
 		});
 
@@ -252,6 +258,10 @@ Tween.prototype = {
 	},
 
 	stop : function(){
+
+		var self = this;
+
+		self.stopped = true;
 
 		if(self.handle){
 
