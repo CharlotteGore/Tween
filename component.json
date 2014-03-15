@@ -2,7 +2,7 @@
   "name": "tween",
   "repo": "charlottegore/tween",
   "description": "Tween generator using cubic-bezier easing",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "keywords": [],
   "dependencies": {
     "charlottegore/easing": "*",

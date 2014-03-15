@@ -1,0 +1,30 @@
+{
+  "name": "tween",
+  "version": "2.0.4",
+  "description": "Tweening utility",
+  "main": "index.js",
+  "scripts": {
+    "test": "grunt install-build-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/charlottegore/tween"
+  },
+  "keywords": [
+    "grunt"
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-cafe-mocha": "~0.1.9",
+    "grunt-mocha-phantomjs": "~0.3.0",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-shell": "~0.4.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "component": "~0.17.4",
+    "chai": "~1.8.0",
+    "mocha": "~1.13.0"
+  },
+  "author": "template",
+  "license": "MIT",
+  "readmeFilename": "Readme.md"
+}
