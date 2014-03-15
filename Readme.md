@@ -10,17 +10,28 @@ It also uses ["Easing"](http://github.com/CharlotteGore/easing). I took the old 
 
 Inspired by ["Component/Tween"](http://github.com/component/tween) I shamelessly borrowed their concept of tweening objects rather than single values. So, you can do:
 
-    require('tween').Tweening({ left : 0, top: 0}).To({ left : 100, top : 100 })
+```js
+var Tween = require('tween').Tween;
+new Tween({ left : 0, top: 0}).to({ left : 100, top : 100 })
+```
 
 and, in your tick callback, you get `values = { left : 45.4554, top : 45.4554 }` which, handily, you can do something like `$( someElement ).css( values )`; 
 
 Even better, and I think this is pretty nifty, you can do:
 
-    require('tween').Tweening('#FF0000').To('#F8E423')
+```js
+new Tween('#FF0000').to('#F8E423');
+```
 
 and, in your tick callback you get `values = { r : 254, g : 156, b : 34 }` . I guess it would be nice if it also had a hex string ready to go, but that's for another day.
 
 Note, also, vaguely fluent interface. Configure your tween with method calls. Easier to remember. Various IDE tools can help you out, too. 
+
+## Updates
+
+- Support for using arrays as your from and to values, and getting arrays back in the tick handle. 
+- useDeltas() method gets relative values instead of absolute values
+- Tween object exported so you can now do new Tween()
 
 ## Features
 
@@ -40,78 +51,100 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 
 ## API
 
-### .Tweening( `from` )
+### new Tween( `from` )
 
-    var tween = require('tween').Tweening({ left: 10 });
+```js
+var Tween = require('tween').Tween;
+tween = new Tween({ left: 10 });
+```
 
-  create a new Tween object. Optionally takes a 'from' key-value pair that represents the start values for the tween.
+create a new Tween object. Optionally takes a 'from' key-value pair that represents the start values for the tween.
 
-  Can also take a string representing a colour, which will generate an object with r, g, b and a properties for tweening.
+Can also take a string representing a colour, which will generate an object with r, g, b and a properties for tweening, or an array, or a single number.
+
+```js
+new Tween([0,1,4]);
+new Tween('#ff00ff');
+new Tween(45);
+```
 
 ## Tween Object API
 
-### .from( `keyvaluepairs` || `color string` )
+### .from( `keyvaluepairs` || `color string` || `array`)
 
-    tween.from({ left : 10, top : 10 })
+```js
+tween.from({ left : 10, top : 10 })
+```
 
-  If you forgot or don't like setting the from values when creating the Tween object, this method is for you.
+If you forgot or don't like setting the from values when creating the Tween object, this method is for you.
 
-  Can also take a string representing a colour, which will generate an object with r, g, b and a properties for tweening.
+Can also take a string representing a colour, which will generate an object with r, g, b and a properties for tweening.
 
 ### .to( `keyvaluepairs` || `colour string` )
 
-    tween.to({ left: 100, top: 50 })
+```js
+tween.to({ left: 100, top: 50 })
+```
 
-  Every tween needs a start and an end. Set the end values here. 
+Every tween needs a start and an end. Set the end values here. Use the same data type as your 'from', hash, array, colour string, etc.
 
 ### .using( `easing` )
 
-  All the functionality in the Easing module is exposed here, but luckily the API is a lot simpler.
+All the functionality in the Easing module is exposed here, but luckily the API is a lot simpler.
 
-    var tween = require('tween').Tweening;
+```
+// with preset... 
+var myTween = new Tween({ left : 10}).to({ left : 100 }).using('ease-in');
 
-    // with preset... 
-    var myTween = tween({ left : 10}).to({ left : 100 }).with('ease-in');
+// or with CSS3 cubic bezier curve data AND `Y When Xn === t` easing
+var myTween = new Tween({left : 10}).to({ left : 100}).using([0.015,0.83,0.375,0.995]) 
 
-    // or with CSS3 cubic bezier curve data AND `Y When Xn === t` easing
-    var myTween = tween({left : 10}).to({ left : 100}).with([0.015,0.83,0.375,0.995]) 
-
-    // or with a full cubic bezier curve..
-    var myTween = tween({left : 10}).to({ left : 100})
-      .with({ 
-        c1 : [0,0], 
-        c2 : [0.015,0.83], 
-        c3 : [0.375,0.995], 
-        c4 : [1,1]
-      })
+// or with a full cubic bezier curve..
+var myTween = new Tween({left : 10}).to({ left : 100})
+  .using({ 
+    c1 : [0,0], 
+    c2 : [0.015,0.83], 
+    c3 : [0.375,0.995], 
+    c4 : [1,1]
+  })
+```
 
 ### .duration( `time` )
 
-  Define how long the animation should take to run. In my experience so far this is more reliable and accurate than system CSS3 animations, but more testing is required to verify this.
+Define how long the animation should take to run. In my experience so far this is more reliable and accurate than system CSS3 animations, but more testing is required to verify this.
 
-  Valid durations are `ms`, `s`, `m`, `h`, `d` and `w`;
+Valid durations are `ms`, `s`, `m`, `h`, `d` and `w`;
 
-    myTween.duration('10s')
-    myVeryLongRunningTween.duration('2h')
+```js
+myTween.duration('10s')
+myVeryLongRunningTween.duration('2h')
+// or just direct milliseconds
+myTween.duration(3500)
+```
 
-    // or just direct milliseconds
-    myTween.duration(3500)
+### .useDeltas()
+
+Put this in your chain somewhere and you'll get relative values - changes since last tick instead of absolute values.
+
+Bear in mind it's unlikely that all the deltas will add up exactly, so you may wish to use the 'finish' callback to make sure your tween ends exactly where you want it to end.
 
 ### .tick( `callback` )
 
   Define the callback which will do the actual work required on the tick event. 
 
-    myTween.tick(function( values ){ 
+```js
+myTween.tick(function( values ){ 
 
-      element.css(values);
+  element.css(values);
 
-    });
+});
 
-    myOtherTween.tick(function(values){
+myOtherTween.tick(function(values){
 
-      element.style.left = values.left + "px";
+  element.style.left = values.left + "px";
 
-    });
+});
+```
 
 ### .begin( `callback` )
 

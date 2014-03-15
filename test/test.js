@@ -11,9 +11,28 @@ describe("Test platform validation", function (){
 		expect(require('tween')).to.be.ok;
 	});
 
+	it("The module can be required", function (){
+
+		expect(require('tween').Tween).to.be.ok;
+	});
+
 });
 
 describe("Tween module", function (){
+
+	describe("new Tween()", function(){
+
+		it("creates a tweening object with the new keywork", function (){
+
+			var Tween = require('tween').Tween;
+
+			var tween = new Tween({ a : 3.14 });
+
+			expect(tween.query().tweens.a.start).to.equal(3.14);
+
+		});
+
+	});
 
 	describe("From", function (){
 
@@ -65,6 +84,16 @@ describe("Tween module", function (){
 
 		});
 
+		it("Can be initialised with an array", function (){
+
+			var tween = Tween([3,4,5]).query().tweens;
+
+			expect(tween[0].start).to.equal(3);
+			expect(tween[1].start).to.equal(4);
+			expect(tween[2].start).to.equal(5);
+
+		});
+
 		it("has a working .from() method", function (){
 
 			var tween = Tween().from({ left : 10, top : 20}).query().tweens;
@@ -110,6 +139,15 @@ describe("Tween module", function (){
 
 			expect(tween.tween.end).to.equal(1543);
 
+
+		})
+
+		it("can take an array", function (){
+
+			var tween = Tween([100,200]).to([200,100]).query().tweens;
+
+			expect(tween[0].end).to.equal(200);
+			expect(tween[1].end).to.equal(100);
 
 		})
 

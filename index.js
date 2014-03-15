@@ -9,13 +9,17 @@ var easing = require('easing').Ease,
 
 var processStates = function( states ){
 
-	if( is.object( states ) ){
+	if ( is.object( states ) ){
 
 		return states;
 
-	} else if( is.string( states ) ){
+	} else if (is.array(states)){
 
-		var rgb = colorParse( states );
+		return states;
+
+	} else if (is.string(states)){
+
+		var rgb = colorParse(states);
 
 		if(rgb){
 
@@ -27,14 +31,13 @@ var processStates = function( states ){
 
 		}
 
-	} else if( is.number( states ) ){
+	} else if (is.number(states)){
 
 		return {
 			tween : states
 		}
 
 	}
-
 	// worst case scenario..
 
 	return {
@@ -66,6 +69,8 @@ var Tween = function( startStates ){
 
 	this._easer = easing().using('linear');
 	this._pathMode = 'linear';
+	this._isArray = (is.array(startStates));
+	this._useDelta = false;
 
 	this.callbacks = {
 		"tick" : function(){},
@@ -177,6 +182,13 @@ Tween.prototype = {
 
 	},
 
+	useDeltas : function(){
+
+		this._useDelta = true;
+		return this;
+
+	},
+
 	// callback helpers
 	tick : function( callback ){
 
@@ -204,7 +216,9 @@ Tween.prototype = {
 		return {
 			easer : this._easer,
 			duration : this._duration,
-			tweens : this.tweens
+			tweens : this.tweens,
+			array : this._isArray,
+			delta : this._useDelta
 		}
 
 	},
@@ -213,6 +227,7 @@ Tween.prototype = {
 
 		var result = {};
 		var val = this._easer( time );
+		var arr = [];
 
 		if(this.tweens){
 
@@ -226,36 +241,68 @@ Tween.prototype = {
 
 	},
 
-	play : function(){
+	play : (function (){
 
-		var self = this;
+		var previousResult = false; 
 
-		self.stopped = false;
+		return function playStarter(){
 
-		self.handle = tick.add( function( elapsed, stop ){
-	
-			var percent = Math.min(1, elapsed / self._duration);
+			var self = this;
 
-			if(!self.stopped){
-				self.callbacks.tick( self.valueAtTime( percent ) ); 
-			}
+			self.stopped = false;
 
-			if(percent === 1){
+			previousResult = self.valueAtTime(0);
 
-				stop();
-				self.callbacks.finish( tick.now() );
+			self.handle = tick.add( function( elapsed, stop ){
+		
+				var percent = Math.min(1, elapsed / self._duration), result, arr = [], i, deltas = {};
 
-			}
+				if(!self.stopped){
+
+					result = self.valueAtTime(percent);
+
+					if(self._useDelta){
+
+						for(i in result){
+							if(result.hasOwnProperty(i)){
+								deltas[i] = result[i] - previousResult[i];
+							}
+						}
+						previousResult = result;
+						result = deltas;
+
+					}
+
+					if (this._isArray){
+						for(i in result){
+							if (result.hasOwnProperty(i)){
+								arr.push(result[i]);
+							}
+						}
+						result = arr;
+					}
+
+					self.callbacks.tick( result ); 
+				}
+
+				if(percent === 1){
+
+					stop();
+					self.callbacks.finish( tick.now() );
+
+				}
 
 
 
-		});
+			});
 
-		self.callbacks.begin( tick.now() );
+			self.callbacks.begin( tick.now() );
 
-		return this;
+			return this;
 
-	},
+		};
+
+	})(),
 
 	stop : function(){
 
@@ -280,3 +327,5 @@ module.exports.Tweening = function( config ){
 	return new Tween(config);
 
 }
+
+module.exports.Tween = Tween;
