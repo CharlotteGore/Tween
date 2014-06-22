@@ -1,10 +1,19 @@
 {
-  "name": "tween",
-  "version": "2.0.6",
-  "description": "Tweening utility",
+  "name": "gm-tween",
+  "version": "2.0.8",
+  "description": "Fluent objected based value tweening, with easing curves, callbacks and basic colour tweening",
   "main": "index.js",
   "scripts": {
     "test": "grunt install-build-test"
+  },
+  "dependencies" : {
+    "gm-easing" : "~1.2.4",
+    "gm-tick" : "~1.0.2",
+    "gm-color-parser" : "~0.1.2",
+    "gm-bezier" : "1.2.0",
+    "foreach" : "~2.0.4",
+    "gm-parse-duration" : "~1.0.2",
+    "gm-is" : "~1.2.2"
   },
   "repository": {
     "type": "git",
@@ -26,5 +35,14 @@
   },
   "author": "template",
   "license": "MIT",
-  "readmeFilename": "Readme.md"
+  "readmeFilename": "Readme.md",
+  "browser" : {
+    "bezier" : "gm-bezier",
+    "easing" : "gm-easing",
+    "color-parser" : "gm-color-parser",
+    "parse-duration" : "gm-parse-duration",
+    "tick" : "gm-tick",
+    "each" : "foreach",
+    "is" : "gm-is"
+  }
 }

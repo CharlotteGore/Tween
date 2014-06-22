@@ -1,6 +1,30 @@
 # Tween
 
-CommonJS Animation Utility.
+CommonJS Animation Utility. Extensively tested and used in production systems, games, web audio and animation. It is solid. 
+
+## Installation
+
+Browserify/npm
+
+```sh
+    $ npm install --save gm-tween
+```
+
+```js
+  var Tween = require('gm-tween').Tween;
+```
+
+Component
+
+```sh
+    $ component install charlottegore/tween;
+```
+
+```js
+  var Tween = require('tween').Tween;
+```
+
+
 
 Every few years I seem to have another crack at writing some kind of animation utility. With new sub-millisecond timings available to decent browsers and CommonJS taking off, it made sense to do something better suited to the modern world.
 
@@ -45,9 +69,7 @@ Note, also, vaguely fluent interface. Configure your tween with method calls. Ea
 - Cross browser support.
 - Fluent interface
 
-## Installation
 
-    $ component install charlottegore/tween
 
 ## API
 
