@@ -1,6 +1,6 @@
 {
   "name": "gm-tween",
-  "version": "2.2.0",
+  "version": "2.2.2",
   "description": "Fluent objected based value tweening, with easing curves, callbacks and basic colour tweening",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "gm-easing" : "1.4.4",
     "gm-tick" : "~1.0.2",
     "gm-color-parser" : "~0.1.2",
-    "gm-bezier" : "1.2.0",
+    "gm-bezier" : "1.4.0",
     "foreach" : "~2.0.4",
     "gm-parse-duration" : "~1.0.2",
     "gm-is" : "~1.2.2"

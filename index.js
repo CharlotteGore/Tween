@@ -1,5 +1,5 @@
 var Easer = require('easing').Easer,
-  bezier = require('bezier'),
+  Bezier = require('bezier').Bezier,
   is = require('is'),
   each = require('each'),
   colorParse = require('color-parser'),
@@ -52,7 +52,7 @@ var buildPaths = function(){
 
     each(this.tweens, function(tween){
 
-      tween.path = bezier().c1([0,tween.start]).c2([0, tween.end]).isLinear();
+      tween.path = new Bezier().c1([0,tween.start]).c2([0, tween.end]).isLinear();
 
     });
   }
