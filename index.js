@@ -1,331 +1,331 @@
 var Easer = require('easing').Easer,
-	Bezier = require('bezier'),
-	is = require('is'),
-	each = require('each'),
-	colorParse = require('color-parser'),
-	parseDuration = require('parse-duration'),
-	tick = require('tick');
+  bezier = require('bezier'),
+  is = require('is'),
+  each = require('each'),
+  colorParse = require('color-parser'),
+  parseDuration = require('parse-duration'),
+  tick = require('tick');
 
 
 var processStates = function( states ){
 
-	if ( is.object( states ) ){
+  if ( is.object( states ) ){
 
-		return states;
+    return states;
 
-	} else if (is.array(states)){
+  } else if (is.array(states)){
 
-		return states;
+    return states;
 
-	} else if (is.string(states)){
+  } else if (is.string(states)){
 
-		var rgb = colorParse(states);
+    var rgb = colorParse(states);
 
-		if(rgb){
+    if(rgb){
 
-			return rgb;
+      return rgb;
 
-		}else{
+    }else{
 
-			throw new Error("Invalid string input!");
+      throw new Error('Invalid string input!');
 
-		}
+    }
 
-	} else if (is.number(states)){
+  } else if (is.number(states)){
 
-		return {
-			tween : states
-		}
+    return {
+      tween : states
+    };
 
-	}
-	// worst case scenario..
+  }
+  // worst case scenario..
 
-	return {
-		tween : 0
-	}
+  return {
+    tween : 0
+  };
 
-}
+};
 
 var buildPaths = function(){
 
-	if(this._pathMode==='linear'){
+  if(this._pathMode==='linear'){
 
-		each(this.tweens, function(tween){
+    each(this.tweens, function(tween){
 
-			tween.path = Bezier().c1([0,tween.start]).c2([0, tween.end]).isLinear();
+      tween.path = bezier().c1([0,tween.start]).c2([0, tween.end]).isLinear();
 
-		});
-	}
+    });
+  }
 
-	return true;
+  return true;
 
-}
+};
 
 var Tween = function( startStates ){
 
-	this.tweens = {};
+  this.tweens = {};
 
-	this._duration = 1000;
+  this._duration = 1000;
 
-	this._easer = new Easer().using('linear');
-	this._pathMode = 'linear';
-	this._isArray = (is.array(startStates));
-	this._useDelta = false;
+  this._easer = new Easer().using('linear');
+  this._pathMode = 'linear';
+  this._isArray = (is.array(startStates));
+  this._useDelta = false;
 
-	this.callbacks = {
-		"tick" : function(){},
-		"begin" : function(){},
-		"finish" : function(){}
-	};
+  this.callbacks = {
+    'tick' : function(){},
+    'begin' : function(){},
+    'finish' : function(){}
+  };
 
-	this.from( startStates );
+  this.from( startStates );
 
-	return this;
-	
+  return this;
+  
 };
 
 Tween.prototype = {
 
-	from : function( startStates ){
+  from : function( startStates ){
 
-		var self = this,
-			states = processStates( startStates );
+    var self = this,
+      states = processStates( startStates );
 
-		each( states, function( value, key ){
+    each( states, function( value, key ){
 
-			self.tweens[key] = {
-				start : value,
-				end : 0
-			}
+      self.tweens[key] = {
+        start : value,
+        end : 0
+      };
 
-		});
+    });
 
-		buildPaths.call(this);
+    buildPaths.call(this);
 
-		return this;
+    return this;
 
-	},
+  },
 
-	to : function( endStates ){
+  to : function( endStates ){
 
-		var self = this,
-			states = processStates( endStates );
+    var self = this,
+      states = processStates( endStates );
 
-		each( states, function( value, key ){
+    each( states, function( value, key ){
 
-			if(self.tweens[key]){
+      if(self.tweens[key]){
 
-				self.tweens[key].end = value;
+        self.tweens[key].end = value;
 
-			}else{
+      }else{
 
-				self.tweens[key] = {
-					start : 0,
-					end : value
+        self.tweens[key] = {
+          start : 0,
+          end : value
 
-				}
+        };
 
-			}
+      }
 
-		});
+    });
 
-		buildPaths.call(this);
+    buildPaths.call(this);
 
-		return this;
+    return this;
 
-	},
+  },
 
-	using : function( config ){
+  using : function( config ){
 
-		var self = this;
+    var self = this;
 
-		if( is.string( config ) ){
+    if ( is.string( config ) ){
 
-			if( require('easing').isPreset( config ) ){
-					// forward and back
-					self._easer = easing().using( config );
+      if ( require('easing').isPreset( config ) ){
+          // forward and back
+        self._easer = new Easer().using( config );
 
-			} else {
+      } else {
 
-				throw new Error("Invalid easing");
+        throw new Error('Invalid easing');
 
-			}
+      }
 
-		}else if( is.array( config ) && config.length === 4 ){
+    } else if( is.array( config ) && config.length === 4 ){
 
-			var temp = new Easer(); 
-			self._easer = temp.usingCSS3Curve.apply(temp, config);
+      var temp = new Easer();
+      self._easer = temp.usingCSS3Curve.apply(temp, config);
 
-		}else if( is.object( config ) && is.array( config.c1 ) && is.array( config.c2 ) && is.array( config.c3) && is.array( config.c4 ) ){
+    } else if ( is.object( config ) && is.array( config.c1 ) && is.array( config.c2 ) && is.array( config.c3) && is.array( config.c4 ) ){
 
-			self._easer = new Easer().usingCustomCurve(config);
+      self._easer = new Easer().usingCustomCurve(config);
 
-		}else {
+    } else {
 
-			throw new Error("Invalid easing");
+      throw new Error('Invalid easing');
 
-		}
+    }
 
-		return this;
+    return this;
 
-	},
+  },
 
-	duration : function( time ){
+  duration : function( time ){
 
-		if(time){
+    if (time){
 
-			this._duration = parseDuration( time );
+      this._duration = parseDuration( time );
 
-		}
+    }
 
-		return this;
+    return this;
 
-	},
+  },
 
-	useDeltas : function(){
+  useDeltas : function(){
 
-		this._useDelta = true;
-		return this;
+    this._useDelta = true;
+    return this;
 
-	},
+  },
 
-	// callback helpers
-	tick : function( callback ){
+  // callback helpers
+  tick : function( callback ){
 
-		this.callbacks.tick = callback;
-		return this;
+    this.callbacks.tick = callback;
+    return this;
 
-	},
+  },
 
-	begin : function( callback ){
+  begin : function( callback ){
 
-		this.callbacks.begin = callback;
-		return this;
+    this.callbacks.begin = callback;
+    return this;
 
-	},
+  },
 
-	finish : function( callback ){
+  finish : function( callback ){
 
-		this.callbacks.finish = callback;
-		return this;
+    this.callbacks.finish = callback;
+    return this;
 
-	},
+  },
 
-	query : function(){
+  query : function(){
 
-		return {
-			easer : this._easer,
-			duration : this._duration,
-			tweens : this.tweens,
-			array : this._isArray,
-			delta : this._useDelta
-		}
+    return {
+      easer : this._easer,
+      duration : this._duration,
+      tweens : this.tweens,
+      array : this._isArray,
+      delta : this._useDelta
+    };
 
-	},
-	// debug method
-	valueAtTime : function( time, reverse ){
+  },
+  // debug method
+  valueAtTime : function( time, reverse ){
 
-		var result = {};
-		var val = this._easer( time );
-		var arr = [];
+    var result = {};
+    var val = this._easer( time );
+    var arr = [];
 
-		if(this.tweens){
+    if(this.tweens){
 
-			each(this.tweens, function(tween, id){
-				result[id] = tween.path.yAtTime( val );
-			})
+      each(this.tweens, function(tween, id){
+        result[id] = tween.path.yAtTime( val );
+      });
 
-		}
+    }
 
-		return result;
+    return result;
 
-	},
+  },
 
-	play : (function (){
+  play : (function (){
 
-		var previousResult = false; 
+    var previousResult = false;
 
-		return function playStarter(){
+    return function playStarter(){
 
-			var self = this;
+      var self = this;
 
-			self.stopped = false;
+      self.stopped = false;
 
-			previousResult = self.valueAtTime(0);
+      previousResult = self.valueAtTime(0);
 
-			self.handle = tick.add( function( elapsed, stop ){
-		
-				var percent = Math.min(1, elapsed / self._duration), result, arr = [], i, deltas = {};
+      self.handle = tick.add( function( elapsed, stop ){
+    
+        var percent = Math.min(1, elapsed / self._duration), result, arr = [], i, deltas = {};
 
-				if(!self.stopped){
+        if(!self.stopped){
 
-					result = self.valueAtTime(percent);
+          result = self.valueAtTime(percent);
 
-					if(self._useDelta){
+          if(self._useDelta){
 
-						for(i in result){
-							if(result.hasOwnProperty(i)){
-								deltas[i] = result[i] - previousResult[i];
-							}
-						}
-						previousResult = result;
-						result = deltas;
+            for(i in result){
+              if(result.hasOwnProperty(i)){
+                deltas[i] = result[i] - previousResult[i];
+              }
+            }
+            previousResult = result;
+            result = deltas;
 
-					}
+          }
 
-					if (this._isArray){
-						for(i in result){
-							if (result.hasOwnProperty(i)){
-								arr.push(result[i]);
-							}
-						}
-						result = arr;
-					}
+          if (this._isArray){
+            for(i in result){
+              if (result.hasOwnProperty(i)){
+                arr.push(result[i]);
+              }
+            }
+            result = arr;
+          }
 
-					self.callbacks.tick( result ); 
-				}
+          self.callbacks.tick( result );
+        }
 
-				if(percent === 1){
+        if(percent === 1){
 
-					stop();
-					self.callbacks.finish( tick.now() );
+          stop();
+          self.callbacks.finish( tick.now() );
 
-				}
+        }
 
 
 
-			});
+      });
 
-			self.callbacks.begin( tick.now() );
+      self.callbacks.begin( tick.now() );
 
-			return this;
+      return this;
 
-		};
+    };
 
-	})(),
+  })(),
 
-	stop : function(){
+  stop : function(){
 
-		var self = this;
+    var self = this;
 
-		self.stopped = true;
+    self.stopped = true;
 
-		if(self.handle){
+    if(self.handle){
 
-			self.handle.stop();
+      self.handle.stop();
 
-		}
+    }
 
-		return this;
+    return this;
 
-	}
+  }
 
-}
+};
 
 module.exports.Tweening = function( config ){
 
-	return new Tween(config);
+  return new Tween(config);
 
-}
+};
 
 module.exports.Tween = Tween;

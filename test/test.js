@@ -1,3 +1,10 @@
+var chai = require('chai');
+var expect = chai.expect;
+var should = chai.should();
+
+
+var tweenModule = require('../index.js');
+
 describe("Test platform validation", function (){
 
 	it("Require exists", function (){
@@ -8,12 +15,12 @@ describe("Test platform validation", function (){
 
 	it("The module can be required", function (){
 
-		expect(require('tween')).to.be.ok;
+		expect(tweenModule).to.be.ok;
 	});
 
 	it("The module can be required", function (){
 
-		expect(require('tween').Tween).to.be.ok;
+		expect(tweenModule.Tween).to.be.ok;
 	});
 
 });
@@ -24,7 +31,7 @@ describe("Tween module", function (){
 
 		it("creates a tweening object with the new keywork", function (){
 
-			var Tween = require('tween').Tween;
+			var Tween = tweenModule.Tween;
 
 			var tween = new Tween({ a : 3.14 });
 
@@ -36,7 +43,7 @@ describe("Tween module", function (){
 
 	describe("From", function (){
 
-		var Tween = require('tween').Tweening;
+		var Tween = tweenModule.Tweening;
 
 		it("Can be initialised with an object", function (){
 
@@ -112,7 +119,7 @@ describe("Tween module", function (){
 
 	describe("To (destination)", function (){
 
-		var Tween = require('tween').Tweening;
+		var Tween = tweenModule.Tweening;
 
 		it("can take an object for to()", function (){
 
@@ -156,7 +163,7 @@ describe("Tween module", function (){
 
 	describe("Using (easing functions)", function (){
 
-		var Tween = require('tween').Tweening;
+		var Tween = tweenModule.Tweening;
 
 		it("has a 'using' method", function (){
 
@@ -255,7 +262,7 @@ describe("Tween module", function (){
 
 	describe("Setting callbacks and triggering", function (){
 
-		var Tween = require('tween').Tweening;
+		var Tween = tweenModule.Tweening;
 
 		var begin, tick, tween, flag;
 
@@ -307,7 +314,7 @@ describe("Tween module", function (){
 
 	describe("Duration", function (){
 
-		var Tween = require('tween').Tweening;
+		var Tween = tweenModule.Tweening;
 
 		it("has a duration method", function (){
 
