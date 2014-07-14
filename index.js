@@ -1,4 +1,4 @@
-var easing = require('easing').Ease,
+var Easer = require('easing').Easer,
 	Bezier = require('bezier'),
 	is = require('is'),
 	each = require('each'),
@@ -67,7 +67,7 @@ var Tween = function( startStates ){
 
 	this._duration = 1000;
 
-	this._easer = easing().using('linear');
+	this._easer = new Easer().using('linear');
 	this._pathMode = 'linear';
 	this._isArray = (is.array(startStates));
 	this._useDelta = false;
@@ -153,12 +153,12 @@ Tween.prototype = {
 
 		}else if( is.array( config ) && config.length === 4 ){
 
-			var temp = easing();
+			var temp = new Easer(); 
 			self._easer = temp.usingCSS3Curve.apply(temp, config);
 
 		}else if( is.object( config ) && is.array( config.c1 ) && is.array( config.c2 ) && is.array( config.c3) && is.array( config.c4 ) ){
 
-			self._easer = easing().usingCustomCurve(config);
+			self._easer = new Easer().usingCustomCurve(config);
 
 		}else {
 
